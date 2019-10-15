@@ -17,7 +17,7 @@ def word_combos_recursion(word_basis, max_len=5, starting_str='', results = []):
         
         # filter out invalid words, recursively search valid combos
         trimmed_basis = filter(lambda x: x[0]>=min_next_index, word_basis)
-        combos(trimmed_basis,
+        word_combos_recursion(trimmed_basis,
                max_len=max_len,
                starting_str = string_1,
                results = results)
@@ -35,7 +35,9 @@ data_set = [(0,'OH'),
             ]
 
     
-word_combos_recursion(data_set, max_length)
+test_results = word_combos_recursion(data_set, max_length)
+for word_combo in test_results:
+    print word_combo
 
 
 
