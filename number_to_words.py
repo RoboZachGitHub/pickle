@@ -35,9 +35,16 @@ alphanumeric_dict = {"0": None,
 word_list_full = words.words() # 236,736 words
 
 # for now we need to parse out all words longer than 7 letters, also capitalize everything
-word_list_seven_letter_max = [word.upper() for word in word_list_full if len(word) <= 7]  
-word_list_seven_letter_max.sort() # makes sure list is in alphabetical order
+word_list_seven_letter_max_tmp = [word.upper() for word in word_list_full if len(word) <= 7]  
+word_list_seven_letter_max_tmp.sort() # makes sure list is in alphabetical order
 #print len(word_list_seven_letter_max) # 59,458 words
+
+# remove duplicates
+# using list comprehension 
+# https://www.geeksforgeeks.org/python-ways-to-remove-duplicates-from-list/
+word_list_seven_letter_max = [] 
+[word_list_seven_letter_max.append(word) for word in word_list_seven_letter_max_tmp if word not in word_list_seven_letter_max] 
+
 
 def is_number_valid(digits_list):
     # tests the digits list for validity, returns True of False
