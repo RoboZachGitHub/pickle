@@ -2,6 +2,9 @@ import re
 from phone_to_words_dicts import one_letter_eng_words
 from phone_to_words_dicts import two_letter_eng_words
 
+
+
+
 def is_number_valid(digits_list):
     # tests the digits list for validity, returns True of False
     # for now, only test if phone number is 7, 10, or 11 digits long
@@ -60,8 +63,10 @@ def word_searcher(letters_lists, english_words_list):
     # special words lists for ! letter and 2 letter words are used to save time
     if word_length == 1:
         words_list = one_letter_eng_words
+        #print one_letter_eng_words
     elif word_length == 2:
         words_list = two_letter_eng_words
+        #print two_letter_eng_words
     else:
         words_list = english_words_list
         words_list = filter(lambda x: len(x) == word_length, words_list)

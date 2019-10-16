@@ -2,26 +2,14 @@ import phone_to_words_fx as ptw_fx
 from phone_to_words_dicts import numeric_to_alpha_dict
 
 
-# need to simplify the following, load in dictionary a different way
-import nltk
-nltk.download('words')
-from nltk.corpus import words  # list of all words in the american english language
-# https://www.datasciencebytes.com/bytes/2014/11/03/get-a-list-of-all-english-words-in-python/
-# must install ntlk for this code to work
-# https://www.nltk.org/
-# sudo apt-get install python-numpy python-nltk
-word_list_full = words.words() # 236,736 words
+# nltk_eng_words_3to7letters.txt is a word list of 3-7 letter english words
+# nltk is python's natural language processing tool kit module
 
-# for now we need to parse out all words longer than 7 letters, also capitalize everything
-word_list_seven_letter_max_tmp = [word.upper() for word in word_list_full if len(word) <= 7]
-word_list_seven_letter_max_tmp.sort() # makes sure list is in alphabetical order
-#print len(word_list_seven_letter_max) # 59,458 words
-
-# remove duplicates
-# using list comprehension
-# https://www.geeksforgeeks.org/python-ways-to-remove-duplicates-from-list/
-word_list_seven_letter_max = []
-[word_list_seven_letter_max.append(word) for word in word_list_seven_letter_max_tmp if word not in word_list_seven_letter_max]
+# read in the 3-7 letter word list, 1 and 2 letter word lists were imported from phone_to_words_dicts
+in_file = open("nltk_eng_words_3to7letters.txt", 'r')
+in_lines = in_file.readlines()
+word_list_primary = tuple(line.rstrip() for line in in_lines)
+in_file.close()
 
 
 
@@ -76,7 +64,7 @@ def all_wordifications(phone_number_string):
     # ex: 8670000 yields [['T','U','V'], ['M','N','O'], ..., None]
     letter_options = [numeric_to_alpha_dict.get(str(digit)) for digit in seven_digit_list]
 
-    words_w_indeces = ptw_fx.return_word_slices(letter_options, word_list_seven_letter_max)
+    words_w_indeces = ptw_fx.return_word_slices(letter_options, word_list_primary)
 
     # we now want to construct things like 1-800-RAG-OVER, 1-800-PAINTER
     # i.e. we want to find all combinations of words that are possible
@@ -94,7 +82,7 @@ def all_wordifications(phone_number_string):
     return transformed_results
 
 
-ex_num_str_w_one = '1-800-714-6837'
+ex_num_str_w_one = '1-800-724-6837'
 string_results = all_wordifications(ex_num_str_w_one)
 
 for x in string_results:
