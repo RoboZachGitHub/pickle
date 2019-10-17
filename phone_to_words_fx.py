@@ -11,7 +11,7 @@ def is_number_valid(digits_list):
     if (len_digits_list != 7 and
             len_digits_list != 10 and
             len_digits_list != 11):
-        print 'phone number seems invalid, length is not 7, 10, or 11 digits.\n'
+        print ('phone number seems invalid, length is not 7, 10, or 11 digits.\n')
         return False
     else:
         return True
@@ -48,7 +48,7 @@ def preparation_routine(phone_number_string):
         prefix_string = '{}-{}-'.format(str(prefix_digits_list[0]),
                                         ''.join(str(d) for d in prefix_digits_list[1:]))
     else:
-        print "the prefix/area-code has incorrect formatting"
+        print ('the prefix/area-code has incorrect formatting')
         return None
 
     return prefix_string, seven_digits_list
