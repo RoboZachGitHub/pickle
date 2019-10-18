@@ -48,8 +48,8 @@ def all_wordifications(phone_number_string):
 
     prep_data = ptw.preparation_routine(phone_number_string)
     if not prep_data:
-        print "input string does not resemble U.S. phone-number."
-        return None
+        print('input string likely does not resemble U.S. phone-number.')
+        return ['None']
     else:
         # prefix_string is a string like '', '1-800-', '(617)-'
         # seven_digit_list, in the form [6,1,7,8,5,2,5,2,8,9]
@@ -69,6 +69,9 @@ def all_wordifications(phone_number_string):
     # we now want to construct things like 1-800-RAG-OVER, 1-800-PAINTER
     # i.e. we want to find all combinations of words that are possible
     results = return_all_word_combos(words_w_indeces)
+    if len(results) == 0:
+        print('no wordifications found.')
+        return [phone_number_string]
 
     # results is a list of lists
     # each sublist is made up of a list of (index, string) tuples like (2, 'DOG')
@@ -78,14 +81,20 @@ def all_wordifications(phone_number_string):
     # transforms to 1-800-RAG-NU-ER  whatever that means  :)
     # the result result [(0, 'SAINT')] should transform to 1-800-SAINT-37
     transformed_results = []
+    # not to forget the original number, which is in principle a correct solution
+    transformed_results.append(phone_number_string)
     for result in results:
-        transformed_results.append(ptw.transform_to_outstring(result, seven_digit_list, prefix_string))
-
+        transformed_result = ptw.transform_to_outstring(result, seven_digit_list, prefix_string)
+        transformed_results.append(transformed_result)
+        print(transformed_result)
     return transformed_results
 
 
-#ex_num_str_w_one = '1-800-724-6837'
-#string_results = all_wordifications(ex_num_str_w_one)
+#ex_number = '1-800-724-6837'
+#ex_number = '222-2222'
+#ex_number = '1'
+#ex_number = "1-800-123!!!!!"
+#ex_number = '244-2287'
+#string_results_list = all_wordifications(ex_number)
+#print(len(string_results_list))
 
-#for x in string_results:
-#    print x

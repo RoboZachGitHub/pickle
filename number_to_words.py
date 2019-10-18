@@ -16,7 +16,6 @@ from phone_to_words_dicts import numeric_to_alpha_dict
 in_file = open("nltk_eng_words_3to7letters.txt", 'r')
 in_lines = in_file.readlines()
 in_file.close()
-
 # primary word list should be globally defined
 word_list_primary = tuple(line.rstrip() for line in in_lines)
 
@@ -29,8 +28,8 @@ def number_to_words(phone_number_string):
 
     prep_data = ptw.preparation_routine(phone_number_string)
     if not prep_data:
-        print "input string does not resemble U.S. phone-number."
-        return None
+        print('input string does not resemble U.S. phone-number.')
+        return 'None'
     else:
         # prefix_string is a string like '', '1-800-', '(617)-'
         # seven_digit_list, in the form [6,1,7,8,5,2,5,2,8,9]
@@ -49,9 +48,14 @@ def number_to_words(phone_number_string):
 
     # transform to outstring format
     # index_word must be give as [index_word] for compatibility with transform_to_outstring
-    wordified_result = ptw.transform_to_outstring([index_word], seven_digit_list, prefix_string)
+    try:
+    	wordified_result = ptw.transform_to_outstring([index_word], seven_digit_list, prefix_string)
+    except:
+    	wordified_result = 'None'
     return wordified_result
 
 #ex_number = '1-800-724-6837'
+#ex_number = '760-599-0766'
+#ex_number = '244-2287'
 #wordified_string = number_to_words(ex_number)
-#print wordified_string
+#print(wordified_string)
