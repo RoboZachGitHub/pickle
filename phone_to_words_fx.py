@@ -4,24 +4,33 @@ from phone_to_words_dicts import two_letter_eng_words
 
 
 def is_number_valid(digits_list):
-    # tests the digits list for validity, returns True of False
-    # for now, only test if phone number is 7, 10, or 11 digits long
-    # other conditions could be implemented
+    """ tests the digits list for validity, returns True of False
+     for now, only test if phone number is 7, 10, or 11 digits long
+     other conditions could be implemented """
+
     len_digits_list = len(digits_list)
     if (len_digits_list != 7 and
             len_digits_list != 10 and
             len_digits_list != 11):
-        print ('phone number seems invalid, length is not 7, 10, or 11 digits.\n')
+        print('phone number seems invalid, length is not 7, 10, or 11 digits.\n')
         return False
     else:
         return True
 
 
 def preparation_routine(phone_number_string):
-    # checks if the number is valid
-    # converts the format into a list of integers
-    # separates pre-fix/area code from 7 digit phone number
-    # returns either None or two lists of integers: prefix_string, seven_digits_list
+    """ checks if the number is valid
+     converts the format into a list of integers
+     separates pre-fix/area code from 7 digit phone number
+     returns either None or two lists of integers: prefix_string, seven_digits_list """
+
+    # if any characters not valid, immediately return None
+    # i.e. only numbers, digits, and dashes are acceptable
+    for char in phone_number_string:
+        if not (char.isdigit() or char.isalpha() or char == '-'):
+            print('invalid characters detected in original input string')
+            print('input string likely does not represent american phone number')
+            return None
 
     # remove all non-numerics from the string
     # using regex according to: https://stackoverflow.com/a/17337613
@@ -43,18 +52,24 @@ def preparation_routine(phone_number_string):
     if len(prefix_digits_list) == 0:
         prefix_string = ''
     elif len(prefix_digits_list) == 3:
-        prefix_string = '({})-'.format(''.join(str(d) for d in prefix_digits_list))
+        prefix_string = '{}-'.format(''.join(str(d) for d in prefix_digits_list))
     elif len(prefix_digits_list) == 4:
         prefix_string = '{}-{}-'.format(str(prefix_digits_list[0]),
                                         ''.join(str(d) for d in prefix_digits_list[1:]))
     else:
-        print ('the prefix/area-code has incorrect formatting')
+        print('the prefix/area-code has incorrect formatting')
         return None
 
     return prefix_string, seven_digits_list
 
 
 def word_searcher(letters_lists, english_words_list):
+    """ takes in a list representing a set of contiguous letter options,
+        taked in an english words list,
+        find all possibe words in the english words list that can be formed
+        by the letter options.
+        special word lists are used when letters_list is of length 1 or 2"""
+
     word_length = len(letters_lists)
     # the current full dictionary used is defined above as word_list_seven_letter_max
     # this is a trimmed version of the nltk dictionary to only include up to 7 letter words
@@ -65,19 +80,19 @@ def word_searcher(letters_lists, english_words_list):
         words_list = two_letter_eng_words
     else:
         words_list = english_words_list
-        words_list = filter(lambda x: len(x) == word_length, words_list)
+        words_list = list(filter(lambda x: len(x) == word_length, words_list))
     # iteratively trim down the words_list, keeping only words matching the allowed criteria at each index
     for i in range(word_length):
-        words_list = [filter(lambda x: x[i] == letter, words_list) for letter in letters_lists[i]]
+        words_list = [list(filter(lambda x: x[i] == letter, words_list)) for letter in letters_lists[i]]
         words_list = [item for sub_list in words_list for item in sub_list]  # flattened list
     return words_list
 
 
 def return_word_slices(letter_options_list, english_words_list):
-    # takes in a list of letter options ex: [['T','U','V'], ['M','N','O'], ..., None]
-    # english_words_list is a list of all english words, perhaps somewhat pre-filtered and sorted...
-    # ... usually allowing max word length 7 for our purposes
-    # returns all possible word slices along with their starting index 0-6 (0-length)
+    """ takes in a list of letter options ex: [['T','U','V'], ['M','N','O'], ..., None]
+     english_words_list is a list of all english words, perhaps somewhat pre-filtered and sorted...
+     ... usually allowing max word length 7 for our purposes
+     returns all possible word slices along with their starting index 0-6 (0-length) """
 
     len_list = len(letter_options_list)
     indeces_and_words = []  # will be filled with tuples ex: (3, 'dog')
@@ -94,20 +109,18 @@ def return_word_slices(letter_options_list, english_words_list):
 
             for word in tmp_words:
                 indeces_and_words.append((index_i, word))
-                # print index_i
-                # print word
             index_f -= 1
 
     return indeces_and_words
 
 
 def return_single_word_slice(letters_list, english_words_list):
-    # takes in a list of letter options ex: [['T','U','V'], ['M','N','O'], ..., None]
-    # english_words_list is a list of all english words, perhaps somewhat pre-filtered and sorted...
-    # ... usually allowing max word length 7 for our purposes
-    # returns a single tuple of type:
-    # (0, 'PAINTER')   which corresponds to the result 1-800-PAINTER
-    # ex: (3,'OVER') transforms 1-800-724-6837  --> 1-800-724-OVER
+    """ takes in a list of letter options ex: [['T','U','V'], ['M','N','O'], ..., None]
+        english_words_list is a list of all english words, perhaps somewhat pre-filtered and sorted...
+        ... usually allowing max word length 7 for our purposes
+        returns a single tuple of type:
+        (0, 'PAINTER')   which corresponds to the result 1-800-PAINTER
+        ex: (3,'OVER') transforms 1-800-724-6837  --> 1-800-724-OVER """
 
     # single word slice returns the longest word that appears alphabetically first
     # (i.e. length is top priority, then the alphabet is searched in the a->z direction
@@ -125,7 +138,6 @@ def return_single_word_slice(letters_list, english_words_list):
         while index_f - slots_to_grab >= 0:
             index_i = index_f - slots_to_grab
             tmp_letter_options = letters_list[index_i:index_f]
-
             # now perform the word search for this slice
             tmp_words = word_searcher(tmp_letter_options, english_words_list)
             if len(tmp_words) != 0:
@@ -138,7 +150,9 @@ def return_single_word_slice(letters_list, english_words_list):
 
 
 def transform_to_outstring(word_combo, seven_digit_list, prefix_string=''):
-    # still needs some comments to explain the function  :)
+    """ converts word_combo, a list of (index, word) tuples, into a formatted string
+        that is closer to representing american phone-number format.
+        then returns that string. """
 
     out_chars = seven_digit_list[:]
 
@@ -170,3 +184,4 @@ def transform_to_outstring(word_combo, seven_digit_list, prefix_string=''):
     out_string = ''.join([formatter(list(out_string), i) for i, char in enumerate(list(out_string))])
 
     return out_string
+
